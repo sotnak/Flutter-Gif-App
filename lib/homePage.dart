@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nsfw_flutter/gifPage.dart';
+import 'categoryPage.dart';
 import 'tag.dart';
 import 'mongo.dart';
 
@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                   onTap: (){
                     Navigator.push(context, 
                       MaterialPageRoute(
-                        builder: (_)=> GifPage(index: 0, tag: tag),
+                        builder: (_)=> CategoryPage(tag: tag, index: 0),
                       ),
                     );
                   },

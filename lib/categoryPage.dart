@@ -56,6 +56,9 @@ class _CategoryPageState extends State<CategoryPage> {
 
   void fetchPage(){
     isFetching = true;
+
+    //futureGifs = Future.any([]);
+  
     futureGifs = fetchGifsByTag(tag: widget.tag.name, limit: limit, skip: limit * currentPage);
     futureGifs.then((value) => {isFetching=false});
   }
@@ -70,7 +73,7 @@ class _CategoryPageState extends State<CategoryPage> {
       body: FutureBuilder <List<Gif>>(
         future: futureGifs,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && !isFetching) {
             List<Gif> gifs = snapshot.data ?? [];
 
             return ScrollablePositionedList.builder(
@@ -81,7 +84,6 @@ class _CategoryPageState extends State<CategoryPage> {
               itemBuilder: (context, index) {
                 return ListTile( //map((gif) => ListTile(
                   onTap: () {
-                    Navigator.pop(context);
                     Navigator.push(context, 
                       MaterialPageRoute(
                         builder: (_)=> GifPage(index: index + currentPage * limit, tag: widget.tag ),
@@ -99,7 +101,7 @@ class _CategoryPageState extends State<CategoryPage> {
             //return Text("${snapshot.error}");
           }
           // By default show a loading spinner.
-          return const CircularProgressIndicator();
+          return const Center( child:CircularProgressIndicator());
         },
       ),
       bottomNavigationBar: BottomNavigationBar(

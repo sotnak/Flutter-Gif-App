@@ -192,6 +192,7 @@ class _GifPageState extends State<GifPage> {
               break;
             case 1:
               Navigator.pop(context);
+              Navigator.pop(context);
               Navigator.push(context, 
                       MaterialPageRoute(
                         builder: (_)=> CategoryPage(tag: widget.tag, index: getGlobalIndex()),
