@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nsfw_flutter/mongo.dart';
 import 'package:nsfw_flutter/tag.dart';
 import 'categoryPage.dart';
@@ -82,6 +83,36 @@ class _GifPageState extends State<GifPage> {
       appBar: AppBar(
         title: Text(widget.tag.name),
         backgroundColor: Colors.blue,
+        actions: [
+          FutureBuilder<List<Gif>>(
+            future: futureGifs,
+            builder: (context, snapshot) {
+              if(snapshot.hasData){
+                List<Gif> gifs = snapshot.data ?? [];
+                  return(
+                    IconButton(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: gifs[index].url)).then((_){
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Url copied to clipboard")));
+                        });
+                      },
+                      icon: const Icon(Icons.share),
+                    )
+                  );
+              }
+              else{
+                return(
+                  IconButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Unable to copy url")));
+                    },
+                    icon: const Icon(Icons.share),
+                  )
+                );
+              }
+            }
+          )
+        ],
       ),
       backgroundColor: Colors.black,
       body: Center(

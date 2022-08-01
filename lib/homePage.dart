@@ -58,6 +58,7 @@ class _HomePageState extends State<HomePage> {
                         size: 28,
                       ),
                       title: TextField(
+                        autofocus: true,
                         style: const TextStyle(
                           color: Colors.white,
                         ),
