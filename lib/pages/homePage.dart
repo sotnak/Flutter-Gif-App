@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nsfw_flutter/widgets/searchBar.dart';
 import 'categoryPage.dart';
-import 'tag.dart';
-import 'mongo.dart';
+import '../utils/tag.dart';
+import '../mongo.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,9 +13,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<List<Tag>> futureTags;
-
-  Icon customIcon = const Icon(Icons.search);
-  Widget customSearchBar = const Text('Flutter NSFW');
 
   void submit(String str){
     fetchCategories(query: str);
@@ -43,46 +41,10 @@ class _HomePageState extends State<HomePage> {
     return MaterialApp(
       title: 'Flutter NSFW Example',
       home: Scaffold(
-        appBar: AppBar(
-          title: customSearchBar,
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  if (customIcon.icon == Icons.search) {
-                    customIcon = const Icon(Icons.cancel);
-                    customSearchBar = ListTile(
-                      leading: const Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                      title: TextField(
-                        autofocus: true,
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                        decoration:const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'search for category',
-                        ),
-                        onSubmitted: (String value) {
-                          if(value.isNotEmpty){
-                            submit(value);
-                          }
-                        },
-                      ),
-                    );
-                  } else {
-                    customIcon = const Icon(Icons.search);
-                    customSearchBar = const Text('Flutter NSFW');
-                    submit('');
-                  }
-                });
-              },
-              icon: customIcon,
-            )
-          ],
+        appBar: SearchBar(
+          submit: submit,
+          title: 'Flutter NSFW',
+          label: 'search for category'
         ),
         body: FutureBuilder <List<Tag>>(
           future: futureTags,

@@ -1,6 +1,6 @@
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
-import 'gif.dart';
-import 'tag.dart';
+import 'utils/gif.dart';
+import 'utils/tag.dart';
 
 const String host = '192.168.0.99';
 const String port = '27017';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:nsfw_flutter/gifPage.dart';
+import 'package:nsfw_flutter/pages/gifPage.dart';
 import 'package:nsfw_flutter/mongo.dart';
-import 'package:nsfw_flutter/tag.dart';
-import 'gif.dart';
+import 'package:nsfw_flutter/utils/tag.dart';
+import '../utils/gif.dart';
 
 const int limit = 64;
 const Duration scrollDuration = Duration(milliseconds: 500);

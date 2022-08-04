@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:nsfw_flutter/widgets/gifBar.dart';
+import 'package:nsfw_flutter/widgets/highlightedText.dart';
 import 'package:nsfw_flutter/mongo.dart';
-import 'package:nsfw_flutter/tag.dart';
+import 'package:nsfw_flutter/utils/tag.dart';
 import 'categoryPage.dart';
-import 'gif.dart';
+import '../utils/gif.dart';
 
 const int windowSize = 32;
 
@@ -80,39 +81,10 @@ class _GifPageState extends State<GifPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.tag.name),
-        backgroundColor: Colors.blue,
-        actions: [
-          FutureBuilder<List<Gif>>(
-            future: futureGifs,
-            builder: (context, snapshot) {
-              if(snapshot.hasData){
-                List<Gif> gifs = snapshot.data ?? [];
-                  return(
-                    IconButton(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: gifs[index].url)).then((_){
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Url copied to clipboard")));
-                        });
-                      },
-                      icon: const Icon(Icons.share),
-                    )
-                  );
-              }
-              else{
-                return(
-                  IconButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Unable to copy url")));
-                    },
-                    icon: const Icon(Icons.share),
-                  )
-                );
-              }
-            }
-          )
-        ],
+      appBar: GifBar(
+        futureGifs: futureGifs,
+        index: index,
+        tagName: widget.tag.name,
       ),
       backgroundColor: Colors.black,
       body: Center(
@@ -144,29 +116,9 @@ class _GifPageState extends State<GifPage> {
                       }
                     ),
                 ),
-                Stack(
-                  children: <Widget>[
-                    // Stroked text as border.
-                    Text(
-                      '[${getGlobalIndex()}] ${gifs[index].title}',
-                      style: TextStyle(
-                        fontSize: 20,
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 6
-                          ..color = Colors.black,
-                      ),
-                    ),
-                    // Solid text as fill.
-                    Text(
-                      '[${getGlobalIndex()}] ${gifs[index].title}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                )
+                HighlightedText(
+                  text: '[${getGlobalIndex()}] ${gifs[index].title}'
+                ),
               ]));
             }
             else if (snapshot.hasError) {
