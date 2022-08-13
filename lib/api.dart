@@ -13,7 +13,7 @@ Future<List<Tag> >fetchTags() async{
   var response = await http.get(Uri.parse('$host/tags'), headers: {'Authorization':hash});
 
   if (response.statusCode != 200) {
-    throw Exception('Failed to load tags');
+    throw Exception('Failed to load tags (${response.statusCode})');
   }
 
   List<dynamic> decoded = jsonDecode(response.body).toList();
@@ -30,7 +30,7 @@ Future<List<Tag> >searchTags(String query) async{
   var response = await http.get(Uri.parse('$host/tags?query=$query'), headers: {'Authorization':hash});
 
   if (response.statusCode != 200) {
-    throw Exception('Failed to load tags');
+    throw Exception('Failed to load tags (${response.statusCode})');
   }
 
   List<dynamic> decoded = jsonDecode(response.body).toList();
@@ -47,7 +47,7 @@ Future<List<Gif>> fetchGifsByTag({required String tag, required int limit, requi
   var response = await http.get(Uri.parse('$host/gifs?tag=$tag&limit=$limit&skip=$skip'), headers: {'Authorization':hash});
 
   if (response.statusCode != 200) {
-    throw Exception('Failed to load gifs');
+    throw Exception('Failed to load tags (${response.statusCode})');
   }
 
   List<dynamic> decoded = jsonDecode(response.body).toList();
