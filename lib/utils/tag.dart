@@ -4,7 +4,7 @@ class Tag {
 
   @override
   String toString() {
-    return 'name: $name, count: $count';
+    return '{name: $name, count: $count}';
   }
 
   const Tag({

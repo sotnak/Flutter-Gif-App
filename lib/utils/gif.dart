@@ -5,7 +5,7 @@ class Gif {
 
   @override
   String toString() {
-    return 'title: $title, url: $url';
+    return '{title: $title, url: $url}';
   }
 
   const Gif({

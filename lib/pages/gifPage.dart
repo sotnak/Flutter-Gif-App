@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nsfw_flutter/widgets/gifBar.dart';
 import 'package:nsfw_flutter/widgets/highlightedText.dart';
-import 'package:nsfw_flutter/mongo.dart';
+import 'package:nsfw_flutter/api.dart';
 import 'package:nsfw_flutter/utils/tag.dart';
 import 'categoryPage.dart';
 import '../utils/gif.dart';
