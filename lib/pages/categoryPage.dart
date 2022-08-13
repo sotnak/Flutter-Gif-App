@@ -38,7 +38,7 @@ class _CategoryPageState extends State<CategoryPage> {
     
     fetchPage();
 
-    futureGifs.whenComplete(() => Future.delayed(const Duration(milliseconds: 100))).whenComplete(() => scrollTo(onPageIndex));
+    futureGifs.whenComplete(() => Future.delayed(const Duration(milliseconds: 500))).whenComplete(() => scrollTo(onPageIndex));
   }
 
   @override

@@ -1,14 +1,13 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:crypto/crypto.dart';
-import 'package:dotenv/dotenv.dart';
 
-var env = DotEnv(includePlatformEnvironment: true)..load();
-String? secret = env['SECRET'];
+String? secret = dotenv.env['SECRET'];
 
 String getAuth(){
 
-  var now = DateTime.now();
+  var now = DateTime.now().toUtc();
 
   int time = now.minute + 60 * (now.hour + 12 * now.day);
 

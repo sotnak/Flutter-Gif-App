@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:dotenv/dotenv.dart';
 import 'package:nsfw_flutter/security.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'utils/gif.dart';
 import 'utils/tag.dart';
 
-var env = DotEnv(includePlatformEnvironment: true)..load();
-String? host = env['API_URL'];
+String? host = dotenv.env['API_URL'];
 
 Future<List<Tag> >fetchTags() async{
   String hash = getAuth();
