@@ -64,16 +64,6 @@ class ArrayWindow<T>{
     }
   }
   
-  Map<String, int> get nextHint => {
-      'skip': ( (_chunk+1) * _windowSize * (3/8) ).floor(),
-      'windowSize': _windowSize,
-    };
-
-  Map<String, int> get previousHint => {
-      'skip': ( (_chunk-1) * _windowSize * (3/8) ).floor(),
-      'windowSize': _windowSize,
-    };
-
   ArrayWindowStatus getStatus(int index){
 
     if(_isLoading){
