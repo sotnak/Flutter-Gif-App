@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nsfw_flutter/utils/arrayWindow.dart';
 import 'package:nsfw_flutter/widgets/gifBar.dart';
 import 'package:nsfw_flutter/widgets/highlightedText.dart';
 import 'package:nsfw_flutter/api.dart';
@@ -20,32 +21,22 @@ class GifPage extends StatefulWidget {
 
 class _GifPageState extends State<GifPage> {
 
-  late Future<List<Gif>> futureGifs;
+  late ArrayWindow<Gif> arrW;
   bool isTimeLimited = false;
-  int index = 0;
+  int globalIndex = 0;
   int chunk = 0;
 
-  int getGlobalIndex(){
-    return (index + chunk * windowSize * (3/8)).floor();
-  }
+  void fetchGifs ({required WindowMovementDirection direction}){
+    Map<String, int> hint = arrW.getHint(direction);
 
-  void fetchGifs ({bool moveIndex = true}){
-    int skip = ( chunk * windowSize * (3/8) ).floor();
-
-    futureGifs = fetchGifsByTag(tag: widget.tag.name, limit: windowSize, skip: skip);
-    if(moveIndex){
-      futureGifs.then( (value) => {
-        if( index >= windowSize * (1/2) ){
-          index = (index - windowSize * (3/8)).floor()
-        }
-        else{
-          index = (index + windowSize * (3/8)).floor()
-        },
-        
-        //print('fetched'),
-        //print({'globalIndex': getGlobalIndex(), 'index': index, 'chunk':chunk}),
-      });
+    if( !hint.containsKey('limit') || !hint.containsKey('skip')){
+      throw Exception('limit/skip hint failed');
     }
+
+    arrW.setFutureArray(
+      future: fetchGifsByTag(tag: widget.tag.name, limit: hint['limit']!, skip: hint['skip']!),
+      direction: direction,
+    );
   }
 
   void restartLimiter() {
@@ -58,16 +49,50 @@ class _GifPageState extends State<GifPage> {
     PaintingBinding.instance.imageCache.clearLiveImages();
   }
 
+  void nextGif(){
+    if(globalIndex+1<widget.tag.count){
+                
+      setState(() {
+        globalIndex++;
+      });
+
+      if(arrW.getStatus(globalIndex) == ArrayWindowStatus.front){
+        setState(() {
+          fetchGifs(direction: WindowMovementDirection.front);
+        });
+      }
+    }
+  }
+
+  void prevGif(){
+    if(globalIndex > 0){
+                
+      setState(() {
+        globalIndex--;
+      });
+
+      if(arrW.getStatus(globalIndex) == ArrayWindowStatus.back){
+        setState(() {
+          fetchGifs(direction: WindowMovementDirection.back);
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
-    index = widget.index;
+    globalIndex = widget.index;
+    int index = widget.index;
+    int chunk = 0;
 
     while(index >= windowSize * 7/8){
-      chunk++;
       index = (index - windowSize * (3/8)).floor();
+      chunk++;
     }
 
-    fetchGifs(moveIndex: false);
+    arrW = ArrayWindow<Gif>(length: widget.tag.count, chunk: chunk, windowSize: windowSize);
+
+    fetchGifs(direction: WindowMovementDirection.none);
     restartLimiter();
     super.initState();
   }
@@ -82,22 +107,26 @@ class _GifPageState extends State<GifPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GifBar(
-        futureGifs: futureGifs,
-        index: index,
+        futureGifs: arrW.futureArray,
+        index: globalIndex,
         tagName: widget.tag.name,
       ),
       backgroundColor: Colors.black,
       body: Center(
         child: FutureBuilder<List<Gif>>(
-          future: futureGifs,
+          future: arrW.futureArray,
           builder: ((context, snapshot) {
             if(snapshot.hasData){
-              List<Gif> gifs = snapshot.data ?? [];
 
               return( Stack( children: [
-                Hero (
-                  tag: gifs[index].url,
-                    child: Image.network(gifs[index].url,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                ),
+                Center( 
+                  child: Hero (
+                    tag: arrW[globalIndex].url,
+                    child: Image.network(arrW[globalIndex].url,
                       scale: 0.5,
                       fit: BoxFit.contain,
                       loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
@@ -115,9 +144,10 @@ class _GifPageState extends State<GifPage> {
                         );
                       }
                     ),
+                  )
                 ),
                 HighlightedText(
-                  text: '[${getGlobalIndex()}] ${gifs[index].title}'
+                  text: '[$globalIndex] ${arrW[globalIndex].title}'
                 ),
               ]));
             }
@@ -159,43 +189,19 @@ class _GifPageState extends State<GifPage> {
 
           switch(button){
             case 0:
-              if(getGlobalIndex() > 0){
-                
-                setState(() {
-                  index--;
-                });
-
-                if(index <= windowSize * 1/8 && chunk > 0){
-                  setState(() {
-                    chunk--;
-                    fetchGifs();
-                  });
-                }
-              }
+              prevGif();
               break;
             case 1:
               Navigator.pop(context);
               Navigator.pop(context);
               Navigator.push(context, 
                       MaterialPageRoute(
-                        builder: (_)=> CategoryPage(tag: widget.tag, index: getGlobalIndex()),
+                        builder: (_)=> CategoryPage(tag: widget.tag, index: globalIndex),
                       ),
                     );
               break;
             case 2:
-              if(getGlobalIndex()+1<widget.tag.count){
-                
-                setState(() {
-                  index++;
-                });
-
-                if(index >= windowSize * 7/8){
-                  setState(() {
-                    chunk++;
-                    fetchGifs();
-                  });
-                }
-              }
+              nextGif();
               break;
             default:
               break;
