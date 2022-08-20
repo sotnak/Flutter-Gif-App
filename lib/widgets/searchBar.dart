@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 class SearchBar extends StatefulWidget with PreferredSizeWidget {
   final Function submit;
+  final Function cancel;
   final String title;
   final String label;
 
-  const SearchBar({Key? key, required this.submit, required this.title, required this.label}) : super(key: key);
+  const SearchBar({Key? key, required this.submit, required this.cancel, required this.title, required this.label}) : super(key: key);
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -60,7 +61,7 @@ class _SearchBarState extends State<SearchBar> {
                 } else {
                   customIcon = const Icon(Icons.search);
                   customSearchBar = Text(widget.title);
-                  widget.submit('');
+                  widget.cancel();
                 }
               });
             },

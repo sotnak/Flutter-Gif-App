@@ -25,12 +25,12 @@ class _CategoryPageState extends State<CategoryPage> {
   int pageCount = 1;
   bool isFetching = true;
 
-  late ItemScrollController itemScrollController;
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   @override
   void initState() {
     super.initState();
-    itemScrollController = ItemScrollController();
 
     currentPage = (widget.index / limit).floor();
     pageCount = (widget.tag.count.toDouble() / limit.toDouble()).ceil();
@@ -78,6 +78,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
             return ScrollablePositionedList.builder(
               itemScrollController: itemScrollController,
+              itemPositionsListener: itemPositionsListener,
               itemCount: gifs.length,
               scrollDirection: Axis.vertical,
               addAutomaticKeepAlives: true,

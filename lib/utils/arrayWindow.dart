@@ -19,7 +19,7 @@ class ArrayWindow<T>{
   bool _isLoading = false;
   final int length;
 
-  ArrayWindow({int? windowSize, int? chunk, Future<List<T>>? futureList, required this.length}){
+  ArrayWindow({int? windowSize, int? chunk, Future<List<T>>? future, required this.length}){
     if (windowSize != null){
       _windowSize = windowSize;
     }
@@ -28,9 +28,9 @@ class ArrayWindow<T>{
       _chunk = chunk;
     }
 
-    if(futureList != null){
+    if(future != null){
       _isLoading = true;
-      _futureArray = futureList;
+      _futureArray = future;
       _futureArray.then((value) => {
         _array = value,
         _isLoading = false
@@ -48,18 +48,21 @@ class ArrayWindow<T>{
         return {
           'skip': ( (_chunk-1) * _windowSize * (3/8) ).floor(),
           'limit': _windowSize,
+          'jump': (-_windowSize * (3/8)).floor(),
         };
 
       case WindowMovementDirection.front:
         return {
           'skip': ( (_chunk+1) * _windowSize * (3/8) ).floor(),
           'limit': _windowSize,
+          'jump': (_windowSize * (3/8)).floor(),
         };
 
       case WindowMovementDirection.none:
         return {
           'skip': ( (_chunk) * _windowSize * (3/8) ).floor(),
           'limit': _windowSize,
+          'jump': 0
         };
     }
   }
@@ -119,6 +122,10 @@ class ArrayWindow<T>{
     }
 
     return innerIndex;
+  }
+
+  int getGlobalIndex(int innerIndex){
+    return innerIndex + (_chunk * _windowSize * (3/8) ).floor();
   }
 
   T operator [] (int globalIndex){

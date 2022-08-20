@@ -8,9 +8,15 @@ import 'utils/tag.dart';
 
 String? host = dotenv.env['API_URL'];
 
-Future<List<Tag> >fetchTags() async{
+Future<List<Tag> >fetchTags({required int limit, required int skip, String? query }) async{
+  String url = '$host/tags?limit=$limit&skip=$skip';
+
+  if(query != null){
+    url += '&query=$query';
+  }
+  
   String hash = getAuth();
-  var response = await http.get(Uri.parse('$host/tags'), headers: {'Authorization':hash});
+  var response = await http.get(Uri.parse(url), headers: {'Authorization':hash});
 
   if (response.statusCode != 200) {
     throw Exception('Failed to load tags (${response.statusCode})');
@@ -19,25 +25,6 @@ Future<List<Tag> >fetchTags() async{
   List<dynamic> decoded = jsonDecode(response.body).toList();
 
   List<Tag> tags = decoded.map((tag) => Tag.fromJson(tag)).toList();
-
-  tags.sort(((a, b) => b.count.compareTo(a.count)));
-
-  return tags;
-}
-
-Future<List<Tag> >searchTags(String query) async{
-  String hash = getAuth();
-  var response = await http.get(Uri.parse('$host/tags?query=$query'), headers: {'Authorization':hash});
-
-  if (response.statusCode != 200) {
-    throw Exception('Failed to load tags (${response.statusCode})');
-  }
-
-  List<dynamic> decoded = jsonDecode(response.body).toList();
-
-  List<Tag> tags = decoded.map((tag) => Tag.fromJson(tag)).toList();
-
-  tags.sort(((a, b) => b.count.compareTo(a.count)));
 
   return tags;
 }
@@ -55,4 +42,19 @@ Future<List<Gif>> fetchGifsByTag({required String tag, required int limit, requi
   List<Gif> gifs = decoded.map((gif) => Gif.fromJson(gif)).toList();
 
   return gifs;
+}
+
+Future<int> fetchTagsCount({String? query}) async {
+  String url = '$host/tagsCount';
+
+  if(query != null){
+    url += '?query=$query';
+  }
+
+  String hash = getAuth();
+  var response = await http.get(Uri.parse(url), headers: {'Authorization':hash});
+
+  Map<String, dynamic> decoded = jsonDecode(response.body);
+
+  return decoded['count'] as int;
 }
