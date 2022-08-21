@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:nsfw_flutter/utils/infiniteScroll.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:nsfw_flutter/pages/gifPage.dart';
 import 'package:nsfw_flutter/api.dart';
 import 'package:nsfw_flutter/utils/tag.dart';
 import '../utils/gif.dart';
 
-const int limit = 64;
 const Duration scrollDuration = Duration(milliseconds: 500);
 
 class CategoryPage extends StatefulWidget {
@@ -18,49 +18,30 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage> {
+class _CategoryPageState extends State<CategoryPage> with InfiniteScroll<CategoryPage, Gif> {
 
-  late Future<List<Gif>> futureGifs;
-  int currentPage = 0;
-  int pageCount = 1;
-  bool isFetching = true;
+  Future<List<Gif>> fetchPage({required int limit, required int skip}) {
 
-  final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+    return fetchGifsByTag(tag: widget.tag.name, limit: limit, skip: skip);
+  }
 
   @override
   void initState() {
     super.initState();
 
-    currentPage = (widget.index / limit).floor();
-    pageCount = (widget.tag.count.toDouble() / limit.toDouble()).ceil();
-    int onPageIndex = widget.index - currentPage * limit;
-    
-    fetchPage();
+    fetchFunction = fetchPage;
 
-    futureGifs.whenComplete(() => Future.delayed(const Duration(milliseconds: 500))).whenComplete(() => scrollTo(onPageIndex));
+    attachListener();
+    
+    initialFetch(length: widget.tag.count);
   }
 
   @override
   void dispose() {
+
+    detachListener();
+
     super.dispose();
-  }
-
-  void scrollUp(){
-    itemScrollController.scrollTo(index: 0, duration: scrollDuration);
-  }
-
-  void scrollTo(int index){
-    itemScrollController.scrollTo(index: index, duration: scrollDuration);
-  }
-
-  void fetchPage(){
-    isFetching = true;
-
-    //futureGifs = Future.any([]);
-  
-    futureGifs = fetchGifsByTag(tag: widget.tag.name, limit: limit, skip: limit * currentPage);
-    futureGifs.then((value) => {isFetching=false});
   }
 
   @override
@@ -71,28 +52,25 @@ class _CategoryPageState extends State<CategoryPage> {
         backgroundColor: Colors.blue,
       ),
       body: FutureBuilder <List<Gif>>(
-        future: futureGifs,
+        future: arrW.futureArray,
         builder: (context, snapshot) {
-          if (snapshot.hasData && !isFetching) {
-            List<Gif> gifs = snapshot.data ?? [];
+          if (snapshot.hasData) {
 
             return ScrollablePositionedList.builder(
               itemScrollController: itemScrollController,
               itemPositionsListener: itemPositionsListener,
-              itemCount: gifs.length,
-              scrollDirection: Axis.vertical,
-              addAutomaticKeepAlives: true,
+              itemCount: arrW.array.length,
               itemBuilder: (context, index) {
                 return ListTile( //map((gif) => ListTile(
                   onTap: () {
                     Navigator.push(context, 
                       MaterialPageRoute(
-                        builder: (_)=> GifPage(index: index + currentPage * limit, tag: widget.tag ),
+                        builder: (_)=> GifPage(index: arrW.getGlobalIndex(index), tag: widget.tag ),
                       ),
                     );
                   },
-                  title: Text('${index + currentPage * limit}. ${gifs[index].title}'),
-                  subtitle: Text(gifs[index].tags.toString()),
+                  title: Text('${arrW.getGlobalIndex(index)}. ${arrW.array[index].title}'),
+                  subtitle: Text(arrW.array[index].tags.toString()),
                 );
               },
             );
@@ -105,56 +83,6 @@ class _CategoryPageState extends State<CategoryPage> {
           return const Center( child:CircularProgressIndicator());
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blue,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.navigate_before),
-            label: 'prev',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.panorama_vertical),
-            label: '${currentPage + 1} / $pageCount',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.navigate_next),
-            label: 'next',
-          )
-        ],
-        onTap: (button){
-          
-          if(isFetching){
-            return;
-          }
-
-          switch(button){
-            case 0:
-              if(currentPage > 0){
-                scrollUp();
-
-                setState(() {
-                  currentPage--;
-                  fetchPage();
-                });
-              }
-              break;
-            case 2:
-              if(currentPage+1<pageCount){
-                scrollUp();
-
-                setState(() {
-                  currentPage++;
-                  fetchPage();
-                });
-              }
-              break;
-            default:
-              break;
-          }
-        },
-      )
     );
   }
 }

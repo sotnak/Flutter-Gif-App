@@ -4,10 +4,9 @@ import 'package:nsfw_flutter/widgets/gifBar.dart';
 import 'package:nsfw_flutter/widgets/highlightedText.dart';
 import 'package:nsfw_flutter/api.dart';
 import 'package:nsfw_flutter/utils/tag.dart';
+import '../utils/infiniteScroll.dart';
 import 'categoryPage.dart';
 import '../utils/gif.dart';
-
-const int windowSize = 32;
 
 class GifPage extends StatefulWidget {
   final int index;
@@ -90,7 +89,7 @@ class _GifPageState extends State<GifPage> {
       chunk++;
     }
 
-    arrW = ArrayWindow<Gif>(length: widget.tag.count, chunk: chunk, windowSize: windowSize);
+    arrW = ArrayWindow(length: widget.tag.count, chunk: chunk, windowSize: windowSize);
 
     fetchGifs(direction: WindowMovementDirection.none);
     restartLimiter();
