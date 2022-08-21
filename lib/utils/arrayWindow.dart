@@ -14,7 +14,7 @@ enum WindowMovementDirection{
 class ArrayWindow<T>{
   int _chunk = 0;
   int _windowSize = 32;
-  List<T> _array = [];
+  List<T> _array = const [];
   Future<List<T>> _futureArray = Future.value([]);
   bool _isLoading = false;
   final int length;
@@ -37,6 +37,15 @@ class ArrayWindow<T>{
       });
     }
   }
+
+  ArrayWindow.empty(): length=0;
+
+  ArrayWindow.from(ArrayWindow<T> other) :
+    length=other.length,
+    _chunk = other._chunk,
+    _windowSize = other._windowSize,
+    _array = List<T>.from(other._array),
+    _futureArray = Future.value(other._array);
 
   List<T> get array => _array;
   int get chunk => _chunk;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nsfw_flutter/utils/arrayWindow.dart';
 import 'package:nsfw_flutter/utils/infiniteScroll.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:nsfw_flutter/pages/gifPage.dart';
@@ -6,13 +7,14 @@ import 'package:nsfw_flutter/api.dart';
 import 'package:nsfw_flutter/utils/tag.dart';
 import '../utils/gif.dart';
 
-const Duration scrollDuration = Duration(milliseconds: 500);
+//const Duration _scrollDuration = Duration(milliseconds: 500);
 
 class CategoryPage extends StatefulWidget {
   final Tag tag;
   final int index;
+  final ArrayWindow<Gif>? arrW;
 
-  const CategoryPage({Key? key, required this.tag, required this.index}) : super(key: key);
+  const CategoryPage({Key? key, required this.tag, this.index = 0, this.arrW}) : super(key: key);
 
   @override
   State<CategoryPage> createState() => _CategoryPageState();
@@ -31,9 +33,24 @@ class _CategoryPageState extends State<CategoryPage> with InfiniteScroll<Categor
 
     fetchFunction = fetchPage;
 
-    attachListener();
-    
-    initialFetch(length: widget.tag.count);
+    final inArrW = widget.arrW;
+
+    if(inArrW != null){
+
+      arrW = inArrW;
+
+      arrW.futureArray.whenComplete(() => 
+        Future.delayed(const Duration(milliseconds: 100)).whenComplete(() => 
+          itemScrollController.jumpTo(index: arrW.getInnerIndex(widget.index), alignment: 0.5)
+        ).whenComplete(() => 
+          attachListener()
+        )
+      );
+
+    }else{
+      initialFetch(length: widget.tag.count);
+      attachListener();
+    }
   }
 
   @override
@@ -65,7 +82,7 @@ class _CategoryPageState extends State<CategoryPage> with InfiniteScroll<Categor
                   onTap: () {
                     Navigator.push(context, 
                       MaterialPageRoute(
-                        builder: (_)=> GifPage(index: arrW.getGlobalIndex(index), tag: widget.tag ),
+                        builder: (_)=> GifPage(index: arrW.getGlobalIndex(index), tag: widget.tag, arrW: ArrayWindow.from(arrW)),
                       ),
                     );
                   },

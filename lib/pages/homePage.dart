@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> with InfiniteScroll<HomePage,Tag> {
     super.initState();
 
     fetchFunction = fetchCategories;
-    arrW = ArrayWindow(length: 0);
+    arrW = ArrayWindow.empty();
 
     attachListener();
 
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> with InfiniteScroll<HomePage,Tag> {
                     onTap: () {
                       Navigator.push(context, 
                         MaterialPageRoute(
-                          builder: (_)=> CategoryPage(tag: arrW.array[index], index: 0),
+                          builder: (_)=> CategoryPage(tag: arrW.array[index]),
                         ),
                       );
                     },

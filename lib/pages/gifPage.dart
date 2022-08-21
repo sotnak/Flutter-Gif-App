@@ -4,15 +4,15 @@ import 'package:nsfw_flutter/widgets/gifBar.dart';
 import 'package:nsfw_flutter/widgets/highlightedText.dart';
 import 'package:nsfw_flutter/api.dart';
 import 'package:nsfw_flutter/utils/tag.dart';
-import '../utils/infiniteScroll.dart';
 import 'categoryPage.dart';
 import '../utils/gif.dart';
 
 class GifPage extends StatefulWidget {
   final int index;
   final Tag tag;
+  final ArrayWindow<Gif> arrW;
 
-  const GifPage({Key? key, required this.index, required this.tag}) : super(key: key);
+  const GifPage({Key? key, required this.index, required this.tag, required this.arrW}) : super(key: key);
 
   @override
   State<GifPage> createState() => _GifPageState();
@@ -23,7 +23,6 @@ class _GifPageState extends State<GifPage> {
   late ArrayWindow<Gif> arrW;
   bool isTimeLimited = false;
   int globalIndex = 0;
-  int chunk = 0;
 
   void fetchGifs ({required WindowMovementDirection direction}){
     Map<String, int> hint = arrW.getHint(direction);
@@ -81,17 +80,9 @@ class _GifPageState extends State<GifPage> {
   @override
   void initState() {
     globalIndex = widget.index;
-    int index = widget.index;
-    int chunk = 0;
 
-    while(index >= windowSize * 7/8){
-      index = (index - windowSize * (3/8)).floor();
-      chunk++;
-    }
+    arrW = widget.arrW;
 
-    arrW = ArrayWindow(length: widget.tag.count, chunk: chunk, windowSize: windowSize);
-
-    fetchGifs(direction: WindowMovementDirection.none);
     restartLimiter();
     super.initState();
   }
@@ -195,7 +186,7 @@ class _GifPageState extends State<GifPage> {
               Navigator.pop(context);
               Navigator.push(context, 
                       MaterialPageRoute(
-                        builder: (_)=> CategoryPage(tag: widget.tag, index: globalIndex),
+                        builder: (_)=> CategoryPage(tag: widget.tag, index: globalIndex, arrW: ArrayWindow.from(arrW)),
                       ),
                     );
               break;
