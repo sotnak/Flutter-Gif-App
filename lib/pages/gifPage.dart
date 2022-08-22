@@ -139,6 +139,10 @@ class _GifPageState extends State<GifPage> {
                 HighlightedText(
                   text: '[$globalIndex] ${arrW[globalIndex].title}'
                 ),
+                HighlightedText(
+                  text: '${arrW[globalIndex].tags}',
+                  alignment: Alignment.bottomRight,
+                )
               ]));
             }
             else if (snapshot.hasError) {
