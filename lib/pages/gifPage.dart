@@ -132,7 +132,10 @@ class _GifPageState extends State<GifPage> {
                             : null,
                           ),
                         );
-                      }
+                      },
+                      errorBuilder: (BuildContext context,Object error, StackTrace? stackTrace) {
+                        return const Center(child: HighlightedText(text: 'Unable to load', alignment: Alignment.center));
+                      },
                     ),
                   )
                 ),
