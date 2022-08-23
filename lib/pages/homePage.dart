@@ -18,6 +18,11 @@ class _HomePageState extends State<HomePage> with InfiniteScroll<HomePage,Tag> {
   String? query;
 
   void submit([String? str]){
+    
+    /*if(str == query){
+      return;
+    }*/
+
     setState((){
       query = str;
     });

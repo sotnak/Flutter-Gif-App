@@ -77,6 +77,21 @@ class _GifPageState extends State<GifPage> {
     }
   }
 
+  Widget navButton({required Icon icon, required Alignment alignment, void Function()? onTap}){
+    return Align(
+      alignment: alignment,
+      child: InkWell(
+        onTap: onTap,
+        child: SizedBox(
+          //color: Colors.blue,
+          width: MediaQuery.of(context).size.width/4,
+          height: MediaQuery.of(context).size.height/2,
+          child: icon,
+        )
+      )
+    );
+  }
+
   @override
   void initState() {
     globalIndex = widget.index;
@@ -146,7 +161,29 @@ class _GifPageState extends State<GifPage> {
                 HighlightedText(
                   text: '${arrW[globalIndex].tags}',
                   alignment: Alignment.bottomRight,
-                )
+                ),
+                Builder(builder:(context) {
+                  if(globalIndex<1){
+                    return Container();
+                  }
+
+                  return navButton(
+                    icon: const Icon(Icons.navigate_before, color: Colors.white),
+                    alignment: Alignment.centerLeft,
+                    onTap: prevGif
+                  );
+                },),
+                Builder(builder:(context) {
+                  if(globalIndex>=widget.tag.count-1){
+                    return Container();
+                  }
+
+                  return navButton(
+                    icon: const Icon(Icons.navigate_next, color: Colors.white),
+                    alignment: Alignment.centerRight,
+                    onTap: nextGif
+                  );
+                },),
               ]));
             }
             else if (snapshot.hasError) {
@@ -159,40 +196,6 @@ class _GifPageState extends State<GifPage> {
         ),
       ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blue,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.navigate_before),
-            label: 'prev',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.navigate_next),
-            label: 'next',
-          )
-        ],
-        onTap: (button){
-          
-          if(isTimeLimited){
-            return;
-          }
-
-          restartLimiter();
-
-          switch(button){
-            case 0:
-              prevGif();
-              break;
-            case 1:
-              nextGif();
-              break;
-            default:
-              break;
-          }
-        },
-      )
     );
 
     return WillPopScope(

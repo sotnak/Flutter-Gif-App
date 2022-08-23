@@ -17,55 +17,72 @@ class SearchBar extends StatefulWidget with PreferredSizeWidget {
 
 class _SearchBarState extends State<SearchBar> {
 
-  Icon customIcon = const Icon(Icons.search);
-  late Widget customSearchBar;
+  bool isSearching = false;
+  String query='';
 
   @override
   void initState() {
-    customSearchBar = Text(widget.title);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    late Widget customSearchBar;
+    
+    if(isSearching){
+      customSearchBar = ListTile(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.cancel,
+            color: Colors.white,
+            size: 28,
+          ),
+          onPressed: () {
+            widget.cancel();
+            setState(() {
+              isSearching = false;
+            });
+          },
+        ),
+        title: TextField(
+          autofocus: true,
+          style: const TextStyle(
+            color: Colors.white,
+          ),
+          decoration:const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'search for category',
+          ),
+          onSubmitted: (String value) {
+            if(value.isNotEmpty){
+              widget.submit(value);
+            }
+          },
+          onChanged: (String value) {
+            query = value;
+          },
+        ),
+      );
+    } else {
+      customSearchBar = Text(widget.title);
+    }
+
     return (AppBar(
         title: customSearchBar,
         actions: [
           IconButton(
             onPressed: () {
               setState(() {
-                if (customIcon.icon == Icons.search) {
-                  customIcon = const Icon(Icons.cancel);
-                  customSearchBar = ListTile(
-                    leading: const Icon(
-                      Icons.search,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                    title: TextField(
-                      autofocus: true,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                      decoration:const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'search for category',
-                      ),
-                      onSubmitted: (String value) {
-                        if(value.isNotEmpty){
-                          widget.submit(value);
-                        }
-                      },
-                    ),
-                  );
+                if (isSearching) {
+                  if(query.isNotEmpty){
+                    widget.submit(query);
+                  }
                 } else {
-                  customIcon = const Icon(Icons.search);
-                  customSearchBar = Text(widget.title);
-                  widget.cancel();
+                  isSearching = true;
                 }
               });
             },
-            icon: customIcon,
+            icon: const Icon(Icons.search),
           )
         ],
       )
