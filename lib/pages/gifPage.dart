@@ -95,7 +95,8 @@ class _GifPageState extends State<GifPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+
+    Scaffold scaffold = Scaffold(
       appBar: GifBar(
         futureGifs: arrW.futureArray,
         index: globalIndex,
@@ -168,10 +169,6 @@ class _GifPageState extends State<GifPage> {
             label: 'prev',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.panorama_vertical),
-            label: 'list',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.navigate_next),
             label: 'next',
           )
@@ -189,23 +186,32 @@ class _GifPageState extends State<GifPage> {
               prevGif();
               break;
             case 1:
-              Navigator.pop(context);
-              Navigator.pop(context);
-              Navigator.push(context, 
-                      MaterialPageRoute(
-                        builder: (_)=> CategoryPage(tag: widget.tag, index: globalIndex, arrW: ArrayWindow.from(arrW)),
-                      ),
-                    );
-              break;
-            case 2:
               nextGif();
               break;
             default:
               break;
           }
-          //print({'globalIndex': getGlobalIndex(), 'index': index, 'chunk':chunk});
         },
       )
     );
+
+    return WillPopScope(
+      child: scaffold,
+      onWillPop: () async {
+
+        if(globalIndex == widget.index){
+          return true;
+        }
+
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.push(context, 
+          MaterialPageRoute(
+            builder: (_)=> CategoryPage(tag: widget.tag, index: globalIndex, arrW: ArrayWindow.from(arrW)),
+          ),
+        );
+        
+        return false;
+      },);
   }
 }
