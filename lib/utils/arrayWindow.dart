@@ -11,6 +11,8 @@ enum WindowMovementDirection{
   none
 }
 
+const int windowSize = 128;
+
 class ArrayWindow<T>{
   int _chunk = 0;
   int _windowSize = 32;

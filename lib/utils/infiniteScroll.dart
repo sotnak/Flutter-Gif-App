@@ -1,8 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/widgets.dart';
 import 'package:nsfw_flutter/utils/arrayWindow.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-const int windowSize = 128;
+const int _windowSize = windowSize;
 
 typedef FetchFunction<V> = Future<List<V>> Function({required int limit, required int skip});
 
@@ -41,11 +43,32 @@ mixin InfiniteScroll<T extends StatefulWidget, U> on State<T>{
 
   List<int> get visibleItems {
     List<int> list = itemPositionsListener.itemPositions.value.map((elem) => elem.index).toList(growable: false);
-    list.sort((a,b)=>a.compareTo(b));
     return list;
   }
 
-  void initialFetch({required int length, int windowSize = windowSize}){
+  Map<String,int> get visibleItemsMinMax {
+    List<int> list = visibleItems;
+    
+    if(list.isEmpty){
+      return {};
+    }
+    int visibleMin = pow(2, 32).floor();
+    int visibleMax = -1;
+
+    for (var element in list) {
+      
+      if(element>visibleMax){
+        visibleMax = element;
+      }
+      if(element<visibleMin){
+        visibleMin=element;
+      }
+
+    }
+    return {'min': visibleMin, 'max': visibleMax};
+  }
+
+  void initialFetch({required int length, int windowSize = _windowSize}){
     setState((){
       arrW = ArrayWindow(
         length: length,
@@ -56,14 +79,17 @@ mixin InfiniteScroll<T extends StatefulWidget, U> on State<T>{
   }
 
   void _visibleItemsListener () {
-    List<int> visible = visibleItems;
+    Map<String, int> visible = visibleItemsMinMax;
 
     if(visible.isEmpty){
       return;
     }
 
-    int lastGlobal = arrW.getGlobalIndex(visible.last);
-    int firstGlobal = arrW.getGlobalIndex(visible.first);
+    int visibleFirst = visible['min'] as int;
+    int visibleLast = visible['max'] as int;
+
+    int lastGlobal = arrW.getGlobalIndex(visibleLast);
+    int firstGlobal = arrW.getGlobalIndex(visibleFirst);
 
     ArrayWindowStatus lastStatus = arrW.getStatus(lastGlobal);
     ArrayWindowStatus firstStatus =  arrW.getStatus(firstGlobal);
@@ -86,9 +112,21 @@ mixin InfiniteScroll<T extends StatefulWidget, U> on State<T>{
       arrW.setFutureArray(
         future: _fetchFunction(limit: hint['limit'] as int, skip: hint['skip'] as int),
         direction: direction,
-        callback: ()=>{
-          itemScrollController.jumpTo(index: visibleItems.first - (hint['jump'] as int) )
+        callback: (){
+
+          switch(direction){
+            case WindowMovementDirection.back:
+              itemScrollController.jumpTo(index: (visibleFirst+1) - (hint['jump'] as int));
+              break;
+            case WindowMovementDirection.front:
+              itemScrollController.jumpTo(index: visibleLast - (hint['jump'] as int), alignment: 1);
+              break;
+            default:
+              // TODO: Handle this case.
+              break;
+          }
         }
+        
       );
     });
   }
