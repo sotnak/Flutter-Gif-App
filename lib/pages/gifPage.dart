@@ -191,7 +191,7 @@ class _GifPageState extends State<GifPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.maybePop(context);
                     },
                     icon: const Icon(Icons.close, color: Colors.white),
                   ),
