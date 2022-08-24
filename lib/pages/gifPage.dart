@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nsfw_flutter/utils/arrayWindow.dart';
-import 'package:nsfw_flutter/widgets/gifBar.dart';
 import 'package:nsfw_flutter/widgets/highlightedText.dart';
 import 'package:nsfw_flutter/api.dart';
 import 'package:nsfw_flutter/utils/tag.dart';
@@ -112,11 +112,6 @@ class _GifPageState extends State<GifPage> {
   Widget build(BuildContext context) {
 
     Scaffold scaffold = Scaffold(
-      appBar: GifBar(
-        futureGifs: arrW.futureArray,
-        index: globalIndex,
-        tagName: widget.tag.name,
-      ),
       backgroundColor: Colors.black,
       body: Center(
         child: FutureBuilder<List<Gif>>(
@@ -156,14 +151,11 @@ class _GifPageState extends State<GifPage> {
                   )
                 ),
                 HighlightedText(
-                  text: '[$globalIndex] ${arrW[globalIndex].title}'
-                ),
-                HighlightedText(
                   text: '${arrW[globalIndex].tags}',
                   alignment: Alignment.bottomRight,
                 ),
                 Builder(builder:(context) {
-                  if(globalIndex<1){
+                  if(globalIndex<1 || arrW.getInnerIndex(globalIndex)<1){
                     return Container();
                   }
 
@@ -174,7 +166,7 @@ class _GifPageState extends State<GifPage> {
                   );
                 },),
                 Builder(builder:(context) {
-                  if(globalIndex>=widget.tag.count-1){
+                  if(globalIndex>=widget.tag.count-1 || arrW.getInnerIndex(globalIndex)>=arrW.length-1){
                     return Container();
                   }
 
@@ -184,6 +176,28 @@ class _GifPageState extends State<GifPage> {
                     onTap: nextGif
                   );
                 },),
+                Align(alignment: Alignment.topRight ,child: IconButton(
+                      onPressed: () {
+                      Clipboard.setData(ClipboardData(text: arrW[globalIndex].url)).then((_){
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Url copied to clipboard")));
+                      });
+                    },
+                    icon: const Icon(Icons.share, color: Colors.white),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.close, color: Colors.white),
+                  ),
+                  HighlightedText(
+                    text: '[$globalIndex] ${arrW[globalIndex].title}'
+                  ),]
+                ),
               ]));
             }
             else if (snapshot.hasError) {
