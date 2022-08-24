@@ -99,6 +99,7 @@ class _GifPageState extends State<GifPage> {
     arrW = widget.arrW;
 
     restartLimiter();
+
     super.initState();
   }
 
@@ -119,7 +120,7 @@ class _GifPageState extends State<GifPage> {
           builder: ((context, snapshot) {
             if(snapshot.hasData){
 
-              return( Stack( children: [
+              return( SafeArea(child: Stack( children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
@@ -198,7 +199,7 @@ class _GifPageState extends State<GifPage> {
                     text: '[$globalIndex] ${arrW[globalIndex].title}'
                   ),]
                 ),
-              ]));
+              ])));
             }
             else if (snapshot.hasError) {
               throw {snapshot.error};
