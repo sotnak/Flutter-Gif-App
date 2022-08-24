@@ -69,13 +69,17 @@ mixin InfiniteScroll<T extends StatefulWidget, U> on State<T>{
   }
 
   void initialFetch({required int length, int windowSize = _windowSize}){
+    Future<List<U>> future = _fetchFunction(limit: windowSize, skip: 0);    
+
     setState((){
       arrW = ArrayWindow(
         length: length,
         windowSize: windowSize,
-        future: _fetchFunction(limit: windowSize, skip: 0)
+        future: future
       );
     });
+
+    future.whenComplete(() => Future.delayed(const Duration(milliseconds: 100)).whenComplete(() => itemScrollController.jumpTo(index: 0, alignment: 0)) );
   }
 
   void _visibleItemsListener () {
