@@ -6,7 +6,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'utils/gif.dart';
 import 'utils/tag.dart';
 
-String? host = dotenv.env['API_URL'];
+final String? host = dotenv.env['API_URL'];
+
+const int randomLimit = 100;
 
 Future<List<Tag> >fetchTags({required int limit, required int skip, String? query }) async{
   String url = '$host/tags?limit=$limit&skip=$skip';
@@ -24,12 +26,18 @@ Future<List<Tag> >fetchTags({required int limit, required int skip, String? quer
 
   List<dynamic> decoded = jsonDecode(response.body).toList();
 
-  List<Tag> tags = decoded.map((tag) => Tag.fromJson(tag)).toList();
+  List<Tag> tags = decoded.map((tag) => Tag.fromJson(tag)).toList(growable: true);
+
+  tags.insert(0, const Tag(name: 'RANDOM', count: randomLimit));
 
   return tags;
 }
 
 Future<List<Gif>> fetchGifsByTag({required String tag, required int limit, required int skip}) async {
+  if(tag == 'RANDOM'){
+    limit = randomLimit;
+  }
+
   String hash = getAuth();
   var response = await http.get(Uri.parse('$host/gifs?tag=$tag&limit=$limit&skip=$skip'), headers: {'Authorization':hash});
 
@@ -56,5 +64,6 @@ Future<int> fetchTagsCount({String? query}) async {
 
   Map<String, dynamic> decoded = jsonDecode(response.body);
 
-  return decoded['count'] as int;
+  //+1 for RANDOM
+  return (decoded['count'] as int) + 1;
 }
