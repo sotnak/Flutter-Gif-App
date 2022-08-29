@@ -28,6 +28,10 @@ Future<List<Tag> >fetchTags({required int limit, required int skip, String? quer
 
   List<Tag> tags = decoded.map((tag) => Tag.fromJson(tag)).toList(growable: true);
 
+  if(query != null){
+    return tags;
+  }
+
   tags.insert(0, const Tag(name: 'RANDOM', count: randomLimit));
 
   return tags;
