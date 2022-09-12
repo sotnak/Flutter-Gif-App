@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nsfw_flutter/utils/arrayWindow.dart';
-import 'package:nsfw_flutter/widgets/highlightedText.dart';
-import 'package:nsfw_flutter/api.dart';
-import 'package:nsfw_flutter/utils/tag.dart';
+import 'package:gif_app/utils/arrayWindow.dart';
+import 'package:gif_app/widgets/highlightedText.dart';
+import 'package:gif_app/api.dart';
+import 'package:gif_app/utils/tag.dart';
 import 'categoryPage.dart';
 import '../utils/gif.dart';
 

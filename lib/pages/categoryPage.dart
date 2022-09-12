@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:nsfw_flutter/utils/arrayWindow.dart';
-import 'package:nsfw_flutter/utils/infiniteScroll.dart';
+import 'package:gif_app/utils/arrayWindow.dart';
+import 'package:gif_app/utils/infiniteScroll.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:nsfw_flutter/pages/gifPage.dart';
-import 'package:nsfw_flutter/api.dart';
-import 'package:nsfw_flutter/utils/tag.dart';
+import 'package:gif_app/pages/gifPage.dart';
+import 'package:gif_app/api.dart';
+import 'package:gif_app/utils/tag.dart';
 import '../utils/gif.dart';
 
 //const Duration _scrollDuration = Duration(milliseconds: 500);

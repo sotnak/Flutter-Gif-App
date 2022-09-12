@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.nsfw_flutter">
+    package="com.example.gif_app">
    <application
-        android:label="nsfw_flutter"
+        android:label="gif app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

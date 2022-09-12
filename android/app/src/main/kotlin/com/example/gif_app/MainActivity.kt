@@ -1,4 +1,4 @@
-package com.example.nsfw_flutter
+package com.example.gif_app
 
 import io.flutter.embedding.android.FlutterActivity
 

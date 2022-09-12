@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:nsfw_flutter/utils/arrayWindow.dart';
+import 'package:gif_app/utils/arrayWindow.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 const int _windowSize = windowSize;

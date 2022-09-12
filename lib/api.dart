@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:nsfw_flutter/security.dart';
+import 'package:gif_app/security.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'utils/gif.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nsfw_flutter/utils/infiniteScroll.dart';
-import 'package:nsfw_flutter/widgets/searchBar.dart';
+import 'package:gif_app/utils/infiniteScroll.dart';
+import 'package:gif_app/widgets/searchBar.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../utils/arrayWindow.dart';
 import 'categoryPage.dart';
@@ -67,12 +67,12 @@ class _HomePageState extends State<HomePage> with InfiniteScroll<HomePage,Tag> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter NSFW Example',
+      title: 'Gif app',
       home: Scaffold(
         appBar: SearchBar(
           submit: submit,
           cancel: (){submit();},
-          title: 'Flutter NSFW',
+          title: 'Gif app',
           label: 'search for category'
         ),
         body: FutureBuilder <List<Tag>>(

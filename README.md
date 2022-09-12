@@ -1,4 +1,4 @@
-# nsfw_flutter
+# gif_app
 
 A new Flutter project.
 
