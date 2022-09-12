@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> with InfiniteScroll<HomePage,Tag> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter NSFW Example',
+      title: 'Flutter NSFW',
       home: Scaffold(
         appBar: SearchBar(
           submit: submit,
